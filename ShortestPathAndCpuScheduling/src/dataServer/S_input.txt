@@ -1,0 +1,13 @@
+8
+A C 15
+A B 10
+B D 12
+B F 15
+C E 10
+C B 5
+D E 2
+D F 1
+F E 5
+-1
+from A
+to F
