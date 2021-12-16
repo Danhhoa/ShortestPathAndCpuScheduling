@@ -1,5 +1,4 @@
-8
-A C 15
+A C 5
 A B 10
 B D 12
 B F 15
@@ -9,5 +8,5 @@ D E 2
 D F 1
 F E 5
 -1
-from A
-to F
+From B
+To F

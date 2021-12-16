@@ -82,7 +82,7 @@ public class ClientHandler extends Thread {
                         out.newLine();
                         out.flush();
 
-                        System.out.println("Gửi chi phí tối ưu đến client:" + String.valueOf(cost));
+                        System.out.println("Gửi chi phí tối ưu đến client:" + cost);
                         out.write(String.valueOf(cost));
                         out.newLine();
                         out.flush();

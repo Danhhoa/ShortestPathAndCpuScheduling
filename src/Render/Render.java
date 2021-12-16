@@ -1,26 +1,22 @@
 package Render;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageTypeSpecifier;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.Insets;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
+import Client.Client;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 
@@ -32,6 +28,8 @@ public class Render extends JFrame {
     public static Object[] arrV = null;
     public static ArrayList<Object> obj;
     public static HashMap<String, Object> hm;
+    private static mxGraph graph;
+
     static JLabel lbPath;
     static JLabel label;
     static JLabel label2;
@@ -52,32 +50,37 @@ public class Render extends JFrame {
         label = new JLabel("Đường đi ngắn nhất: ");
         label2 = new JLabel("Chi phí ngắn nhất: " + cost);
         lbPath = new JLabel();
+        JButton btnExport = new JButton("Xuất ảnh");
+        btnExport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    exportGraph();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
         controlPanel = new JPanel();
+
+        controlPanel.add(btnExport);
 
         controlPanel.setLayout(new FlowLayout());
         BoxLayout boxlayout = new BoxLayout(controlPanel, BoxLayout.Y_AXIS);
         controlPanel.setLayout(boxlayout);
         controlPanel.setBorder(new EmptyBorder(new Insets(50, 100, 50, 100)));
-        mxGraph graph = buildGraph(filename, shortestPath);
+        graph = buildGraph(filename, shortestPath);
         mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
         layout.setOrientation(SwingConstants.WEST);
         layout.execute(graph.getDefaultParent());
 
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-//		graphComponent.setBounds(50, 50, 800, 200);
         controlPanel.add(graphComponent);
         controlPanel.add(label);
         controlPanel.add(label2);
-        System.out.println("cao: " +graphComponent.getHeight());
-//		graphComponent.add(label);
         frameVisual.add(controlPanel);
-//		frame.add(controlPanel2);
-//		frame.add(graphComponent);
         frameVisual.setVisible(true);
 
-//
-//        mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
-//        layout.execute(graph.getDefaultParent());
 
     }
 
@@ -108,7 +111,13 @@ public class Render extends JFrame {
         });
     }
 
-    @SuppressWarnings("unlikely-arg-type")
+    public static void exportGraph() throws IOException {
+        int random = (int) Math.floor(((Math.random() * 1000)));
+        System.out.println("Ảnh: " +random);
+        BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
+        ImageIO.write(image, "PNG", new File("./src/images/graph" +random+ ".png"));
+    }
+
     private static mxGraph buildGraph(String filename, String[] listShortestPath)
             throws NumberFormatException, IOException {
         mxGraph graph = new mxGraph();
@@ -134,14 +143,14 @@ public class Render extends JFrame {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
             listNodes = new ArrayList<>();
             hm = new HashMap<>();
-            int vertices = Integer.valueOf(br.readLine());
-            if (vertices <= 0) {
-                System.out.println("Hãy điền tổng số đỉnh của đồ thị vào dòng đầu tiên của file ");
+//            int vertices = Integer.valueOf(br.readLine());
+//            if (vertices <= 0) {
+//                System.out.println("Hãy điền tổng số đỉnh của đồ thị vào dòng đầu tiên của file ");
 //				return null;
-            }
+//            }
             String line;
             Object v;
-            arrV = new Object[vertices];
+            arrV = new Object[20];
             while (!(line = br.readLine()).equals("-1")) {
                 String[] tokens = line.split("\\s+");
                 System.out.println("XÉT " + line);

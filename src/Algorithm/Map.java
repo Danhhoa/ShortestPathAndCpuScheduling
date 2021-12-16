@@ -50,15 +50,15 @@ public class Map {
         try {
             listVertAdded = new ArrayList<>();
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(mapFile)));
-            int vertices = Integer.valueOf(br.readLine());
-            if (vertices <= 0) {
-                System.out.println("Vertex amount from map file is less than or equal to 0. Must have two or more "
-                        + "points to construct a map.");
-                return null;
-            }
+//            int vertices = Integer.valueOf(br.readLine());
+//            if (vertices <= 0) {
+//                System.out.println("Vertex amount from map file is less than or equal to 0. Must have two or more "
+//                        + "points to construct a map.");
+//                return null;
+//            }
             String line;
             int i = 0; // counter used to add vertices to map array
-            map = new Vertex[vertices]; // initialize new empty map with length using vertex count
+            map = new Vertex[20]; // initialize new empty map with length using vertex count
 
             while (!(line = br.readLine()).equals("-1")) {
                 String[] tokens = line.split("\\s+");
@@ -114,7 +114,7 @@ public class Map {
 
                     }
                 }
-                if (i > vertices) {
+                if (i > 20) {
                     System.out.println("Additional vertices were found in the map file that were counted in the total"
                             + "amount of vertices. Please check the value from line in the map file "
                             + "and try again or the path finding may not be accurate.");

@@ -12,6 +12,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -142,10 +145,12 @@ public class Client extends JFrame implements ActionListener {
         String[] shortestPath = null;
 
 
-        String dataResponse = in.readLine(); // waiting data from server
+//        String dataResponse = in.readLine(); // waiting data from server
+        String dataResponse;
         String regex = "\\d+(\\.\\d+)?";
-        String cost = null;
-        while (dataResponse != null) {
+
+        while ((dataResponse = in.readLine()) != null) {
+            String cost = null;
             if (dataResponse.matches(regex)) {
                 cost = dataResponse;
                 System.out.println("chi phí: " + dataResponse);
@@ -158,34 +163,9 @@ public class Client extends JFrame implements ActionListener {
             if (filename != null && shortestPath != null && cost != null) {
                 Render.startDraw(filename, shortestPath, cost);
             }
-
-            dataResponse = in.readLine();
         }
 
-
-//        if (stdIn.readLine() == "end") {
-//            stopConnect();
-//        }
-
     }
-
-//        try {
-//            FileInputStream fis = new FileInputStream(FileName);
-//            BufferedInputStream bis = new BufferedInputStream(fis);
-//            BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
-//            byte[] bytes = new byte[8192];
-//            int count;
-//            while ((count = bis.read(bytes)) > 0) {
-//                out.write(bytes, 0, count);
-//
-//
-//            }
-//            out.close();
-//            fis.close();
-//            bis.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
     public void stopConnect() throws IOException {
         in.close();
@@ -193,7 +173,7 @@ public class Client extends JFrame implements ActionListener {
         socket.close();
     }
 
-    public static void main(String[] args) throws UnknownHostException, IOException {
+    public static void main(String[] args) throws IOException {
         Client client = new Client ("localhost", 6655);
     }
 
@@ -237,25 +217,47 @@ public class Client extends JFrame implements ActionListener {
                     out.flush();
 
                     String tmp = "";
+                    String checkMap = "\\w+\\s\\w+\\s\\b((0*[1-9]\\d*)(\\.\\d)?)|(\\d+(\\.\\d)+)\b";
+                    String checkSrcDes = "^(from|From|FROM|to|To|TO)\\s\\w+$";
+                    HashMap<String,String> arrNode = new HashMap<>();
+                    String[] tmpArr;
+                    boolean flag = true;
                     try {
-                        line = readfile.readLine();
-                        while (line != null) {
+
+                        while ((line = readfile.readLine()) != null) {
                             System.out.println(line);
-                            tmp = tmp + line + ";";
-                            line = readfile.readLine();
+                            tmpArr = line.split(" ");
+                            if (line.matches(checkMap)) {
+                                tmp = tmp + line + ";";
+                                arrNode.put(tmpArr[0], tmpArr[1]);
+                            }
+                            else if(line.equals("-1") || (line.matches(checkSrcDes) && (arrNode.containsKey(tmpArr[1]) || arrNode.containsValue(tmpArr[1])))) {
+                                tmp += line +";";
+                            } else {
+                                JOptionPane.showMessageDialog(frame, "Dữ liệu trong " +fileNeedCreate+ " sai yêu cầu \n"
+                                                + "hãy kiểm tra tại dòng (" + line + ") và sửa theo đúng format \n"
+                                                + "Tên đỉnh không dùng kí tự đặt biệt, trọng số phải > 0\n"
+                                                + "Phải có flag -1 để phân tách dữ liệu các đỉnh và đỉnh nguồn đích cần tìm\n"
+                                                + "đỉnh nguồn và đích cần tìm phải tồn tại trong đồ thị\n"
+                                                +"Ví dụ: \n" + "A B 10\n" +"A C 1\n"+"...\n" + "-1\n" + "from A\n" + "to B\n", "Thông báo",
+                                        JOptionPane.WARNING_MESSAGE);
+                                messageLabel.setText("Hãy nhập dữ liệu đúng");
+                                flag = false;
+                                break;
+                            }
+
+
                         }
-                        System.out.println(tmp);
-                        out.write(tmp);
-                        out.newLine();
-                        out.flush();
+                        if (flag) {
+                            System.out.println(tmp);
+                            out.write(tmp);
+                            out.newLine();
+                            out.flush();
+                        }
                     } finally {
                         // TODO: handle finally clause
 //						readfile.close();
-
                     }
-//					readfile.close();
-
-
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 } catch (IOException e1) {

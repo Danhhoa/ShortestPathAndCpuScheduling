@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
-
+import java.util.Locale;
 
 
 public class App {
@@ -33,10 +31,10 @@ public class App {
                         next = br.readLine();
                     }
                     for (String i : direction.keySet()) {
-                        if (i.equalsIgnoreCase("from")) {
+                        if (i.toLowerCase(Locale.ROOT).equalsIgnoreCase("from")) {
                             from = direction.get(i);
                             listDir.add(from);
-                        } else if (i.equalsIgnoreCase("to")) {
+                        } else if (i.toLowerCase(Locale.ROOT).equalsIgnoreCase("to")) {
                             to = direction.get(i);
                             listDir.add(to);
                         }
