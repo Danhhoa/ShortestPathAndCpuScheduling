@@ -1,7 +1,6 @@
 package Render;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageTypeSpecifier;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -56,19 +55,20 @@ public class Render extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     exportGraph();
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
         });
         controlPanel = new JPanel();
-
         controlPanel.add(btnExport);
+        controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         controlPanel.setLayout(new FlowLayout());
         BoxLayout boxlayout = new BoxLayout(controlPanel, BoxLayout.Y_AXIS);
         controlPanel.setLayout(boxlayout);
-        controlPanel.setBorder(new EmptyBorder(new Insets(50, 100, 50, 100)));
+        controlPanel.setBorder(new EmptyBorder(new Insets(20, 50, 20, 50)));
         graph = buildGraph(filename, shortestPath);
         mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
         layout.setOrientation(SwingConstants.WEST);
@@ -76,18 +76,18 @@ public class Render extends JFrame {
 
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         controlPanel.add(graphComponent);
+        controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
         controlPanel.add(label);
         controlPanel.add(label2);
         frameVisual.add(controlPanel);
         frameVisual.setVisible(true);
-
-
     }
 
-    private void showLabelDemo(String[] listShortestPath) {
+    private void showShorestPath(String[] listShortestPath) {
         String tmp = "";
         for (int i = 0; i < listShortestPath.length; i++) {
-            tmp += " qua đỉnh " + listShortestPath[i];
+            tmp += "Qua đỉnh " + listShortestPath[i] + " ";
         }
 
         System.out.println(tmp);
@@ -101,7 +101,7 @@ public class Render extends JFrame {
             public void run() {
                 try {
                     Render render = new Render(filename, shortestPath, cost);
-                    render.showLabelDemo(shortestPath);
+                    render.showShorestPath(shortestPath);
 
                 } catch (NumberFormatException | IOException e) {
                     // TODO Auto-generated catch block
@@ -116,6 +116,8 @@ public class Render extends JFrame {
         System.out.println("Ảnh: " +random);
         BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
         ImageIO.write(image, "PNG", new File("./src/images/graph" +random+ ".png"));
+        JOptionPane.showMessageDialog(frameVisual, "Đã xuất thành công ảnh: graph" + random, "Thông báo",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static mxGraph buildGraph(String filename, String[] listShortestPath)

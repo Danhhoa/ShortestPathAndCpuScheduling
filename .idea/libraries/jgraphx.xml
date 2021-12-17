@@ -2,8 +2,11 @@
   <library name="jgraphx">
     <CLASSES>
       <root url="jar://D:/jgraphx.jar!/" />
+      <root url="jar://D:/java-json.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://D:/java-json.jar!/" />
+    </SOURCES>
   </library>
 </component>

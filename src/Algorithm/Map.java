@@ -115,9 +115,7 @@ public class Map {
                     }
                 }
                 if (i > 20) {
-                    System.out.println("Additional vertices were found in the map file that were counted in the total"
-                            + "amount of vertices. Please check the value from line in the map file "
-                            + "and try again or the path finding may not be accurate.");
+                    System.err.println("số đỉnh khởi tạo lớn hơn mảng");
                     return null;
                 }
             }
