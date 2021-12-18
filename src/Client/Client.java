@@ -167,7 +167,7 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         _btn_open.addActionListener(this);
 
         _btn_send = new JButton("Send File");
-        _btn_send.setBounds(240, 200, 100, 40);
+        _btn_send.setBounds(200, 200, 100, 40);
         _btn_send.addActionListener(this);
 
         _btn_exit = new JButton("EXIT");
@@ -205,7 +205,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         panel_CpuScheduling.add(_lbl_algorithm);
 
         panel_CpuScheduling.add(msg_text);
-        panel_CpuScheduling.add(nameFile);
 
         panel_CpuScheduling.add(_btn_open);
         panel_CpuScheduling.add(_btn_submit);
@@ -304,7 +303,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
             }
             if (!dataResponse.matches(regex) && !dataResponse.matches(checkPath)){
                 String result = "";
-
                 String tmpResult = "";
                 JTextArea gantt = new JTextArea(5, 20);
                 _scrollpane = new JScrollPane(gantt);
@@ -499,21 +497,42 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         openFileChooser.setFileFilter(new FileNameExtensionFilter("Chỉ chọn file đuôi .txt", "txt"));
 
         if (e.getSource() == _btn_open) {
+            _panel_gantt.removeAll();
+            _panel_gantt.repaint();
+            _panel_gantt.validate();
             int returnValue = openFileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 // set the label to the path of the selected file
                 filename = openFileChooser.getSelectedFile().getAbsolutePath();
-                nameFile.setText(filename);
+                JTextArea gantt = new JTextArea(5, 20);
+                _scrollpane = new JScrollPane(gantt);
+                gantt.setEditable(false);
+                gantt.setFont(_font_job);
+                gantt.setBackground(getBackground());
+                gantt.setText(filename);
+                _panel_gantt.add(gantt);
+                _panel_gantt.validate();
                 fileNeedCreate = openFileChooser.getSelectedFile().getName();
             }
             // if the user cancelled the operation
             else {
                 JOptionPane.showMessageDialog(_panel_gantt, "Hãy chọn file cần thực hiện tìm đường đi ngắn nhất", "Alert",
                         JOptionPane.WARNING_MESSAGE);
-                nameFile.setText("hãy chọn file cần thực hiện");
+                JTextArea gantt = new JTextArea(5, 20);
+                _scrollpane = new JScrollPane(gantt);
+                gantt.setEditable(false);
+                gantt.setFont(_font_job);
+                gantt.setBackground(getBackground());
+                gantt.setText("hãy chọn file cần thực hiện");
+                _panel_gantt.add(gantt);
+                _panel_gantt.validate();
             }
         }
         if (e.getSource() == _btn_send) {
+            _panel_gantt.removeAll();
+            _panel_gantt.repaint();
+            _panel_gantt.validate();
+            _scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
             String chooseTask = "startCpuScheduling";
             SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
             encryptedMessage = Encryption.encryptDataByAES(chooseTask, skeySpec);
@@ -532,9 +551,16 @@ public class Client extends JFrame implements ActionListener, ItemListener {
 
             BufferedReader readfile = null;
             if (fileNeedCreate == null && filename == null) {
-                JOptionPane.showMessageDialog(_panel_gantt, "Hãy chọn file cần thực hiện tìm đường đi ngắn nhất", "Thông báo",
+                JOptionPane.showMessageDialog(_panel_gantt, "Hãy chọn file cần thực hiện lập lịch CPU", "Thông báo",
                         JOptionPane.WARNING_MESSAGE);
-                nameFile.setText(" Hãy chọn file cần thực hiện!!");
+                JTextArea gantt = new JTextArea(5, 20);
+                _scrollpane = new JScrollPane(gantt);
+                gantt.setEditable(false);
+                gantt.setFont(_font_job);
+                gantt.setBackground(getBackground());
+                gantt.setText("hãy chọn file cần thực hiện");
+                _panel_gantt.add(gantt);
+                _panel_gantt.validate();
             } else {
                 try {
                     boolean flag = true;
@@ -565,7 +591,14 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                             JOptionPane.showMessageDialog(_panel_gantt, "Dữ liệu trong " + fileNeedCreate + " sai yêu cầu \n"
                                             + "hãy kiểm tra tại dòng (" + line + ") và sửa theo đúng format \n", "Thông báo",
                                     JOptionPane.WARNING_MESSAGE);
-                            nameFile.setText("Hãy nhập dữ liệu đúng");
+                            JTextArea gantt = new JTextArea(5, 20);
+                            _scrollpane = new JScrollPane(gantt);
+                            gantt.setEditable(false);
+                            gantt.setFont(_font_job);
+                            gantt.setBackground(getBackground());
+                            gantt.setText("Hãy nhập dữ liệu đúng");
+                            _panel_gantt.add(gantt);
+                            _panel_gantt.validate();
                             flag = false;
                             break;
                         }
@@ -617,7 +650,14 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 if (fileNeedCreate == null && filename == null) {
                     JOptionPane.showMessageDialog(_panel_gantt, "Hãy chọn file cần thực hiện dể giải bài toán lập lịch CPU", "Thông báo",
                             JOptionPane.WARNING_MESSAGE);
-                    nameFile.setText(" Hãy chọn file cần thực hiện!!");
+                    JTextArea gantt = new JTextArea(5, 20);
+                    _scrollpane = new JScrollPane(gantt);
+                    gantt.setEditable(false);
+                    gantt.setFont(_font_job);
+                    gantt.setBackground(getBackground());
+                    gantt.setText("hãy chọn file cần thực hiện");
+                    _panel_gantt.add(gantt);
+                    _panel_gantt.validate();
                 }
                 if (this._algorithm == null) {
                     JOptionPane.showMessageDialog(_panel_gantt, "Chọn thuật toán lập lịch cần tính!"
