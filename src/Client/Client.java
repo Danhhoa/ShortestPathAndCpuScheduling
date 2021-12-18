@@ -53,7 +53,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
     JButton _btn_open;
     JButton _btn_submit;
     JButton _btn_send;
-    JButton _btn_exit;
 
     CheckboxGroup _cbg_algo;
     Checkbox _cb_FCFS;
@@ -72,9 +71,8 @@ public class Client extends JFrame implements ActionListener, ItemListener {
 
     void initGui() {
         frame = new JFrame("Đường đi ngắn nhất và lập lịch cpu");
-        frame.setBounds(0, 0, 900, 500);
+        frame.setBounds(0, 0, 650, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 773, 394);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
@@ -88,25 +86,8 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         openFileChooser.setCurrentDirectory(new File(s));
         openFileChooser.setFileFilter(new FileNameExtensionFilter("Chỉ chọn file đuôi .txt", "txt"));
 
-        panel = new JPanel();
-        panel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
-        panel.setBounds(0, 0, 250, 355);
-        contentPane.add(panel);
-        panel.setLayout(null);
-
-        btnSelectFindPath = new JButton("Tìm đường đi ngắn nhất");
-        btnSelectFindPath.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnSelectFindPath.setForeground(SystemColor.menuText);
-        btnSelectFindPath.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
-        btnSelectFindPath.setBounds(10, 26, 198, 58);
-        panel.add(btnSelectFindPath);
-
-        btnScheduleCPU = new JButton("Lập lịch CPU");
-        btnScheduleCPU.setBounds(10, 193, 198, 58);
-        panel.add(btnScheduleCPU);
-
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setBounds(260, 11, 600, 400);
+        tabbedPane.setBounds(20, 11, 580, 400);
         contentPane.add(tabbedPane);
 
 //        Tabber panel find path
@@ -170,10 +151,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         _btn_send.setBounds(200, 200, 100, 40);
         _btn_send.addActionListener(this);
 
-        _btn_exit = new JButton("EXIT");
-        _btn_exit.setBounds(20, 280, 200, 60);
-        _btn_exit.addActionListener(this);
-
         _cbg_algo = new CheckboxGroup();
 
         _cb_FCFS = new Checkbox("First Come First Serve (FCFS)", false, _cbg_algo);
@@ -209,7 +186,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         panel_CpuScheduling.add(_btn_open);
         panel_CpuScheduling.add(_btn_submit);
         panel_CpuScheduling.add(_btn_send);
-        panel_CpuScheduling.add(_btn_exit);
 
         panel_CpuScheduling.add(_cb_FCFS);
         panel_CpuScheduling.add(_cb_SJF);
@@ -285,23 +261,28 @@ public class Client extends JFrame implements ActionListener, ItemListener {
         out.newLine();
         out.flush();
 
-//        String dataResponse = in.readLine(); // waiting data from server
         String dataResponse;
+
+
         String regex = "\\d+(\\.\\d+)?";
         String checkPath ="([\\w]\\s)*";
 
-        while ((dataResponse = in.readLine()) != null) {
+        while ((dataResponse = in.readLine()) != null) {// waiting data from server
+            String data = "";
+            //Decrypt data by AES
+            String dataDecrypt = Decryption.decryptDataByAES(dataResponse, skeySpec);
+            data = dataDecrypt;
             String cost = null;
-            if (dataResponse.matches(regex)) {
-                cost = dataResponse;
-                System.out.println("chi phí: " + dataResponse);
+            if (data.matches(regex)) {
+                cost = data;
+                System.out.println("chi phí: " + data);
             }
 
-            if (dataResponse.matches(checkPath)) {
-                System.out.println("data " + dataResponse);
-                shortestPath = dataResponse.split(" ");
+            if (data.matches(checkPath)) {
+                System.out.println("data " + data);
+                shortestPath = data.split(" ");
             }
-            if (!dataResponse.matches(regex) && !dataResponse.matches(checkPath)){
+            if (!data.matches(regex) && !data.matches(checkPath)){
                 String result = "";
                 String tmpResult = "";
                 JTextArea gantt = new JTextArea(5, 20);
@@ -309,13 +290,10 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 gantt.setEditable(false);
                 gantt.setFont(_font_job);
                 gantt.setBackground(getBackground());
-                //Decrypt data by AES
-                result = Decryption.decryptDataByAES(dataResponse, skeySpec);
-                tmpResult = result;
+                tmpResult = data;
                 tmpResult = tmpResult.replace(" <-- ", " --> ");
-                if (result.equals("EXIT")) return;
                 if (!result.equals("RR")) {
-                    gantt.setText(result);
+                    gantt.setText(data);
                     _panel_gantt.add(gantt);
                     _panel_gantt.validate();
 
@@ -325,8 +303,8 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                     }
                 }
                 if (result.equals("RR")) {
-                    result = in.readLine();
-                    gantt.setText(result);
+//                    result = in.readLine();
+                    gantt.setText(data);
                     _panel_gantt.add(gantt);
                     _panel_gantt.validate();
                 }
@@ -359,9 +337,7 @@ public class Client extends JFrame implements ActionListener, ItemListener {
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
                 try {
-                    System.out.println("Client close");
                     frame.dispose();
-
                     String endTask;
                     String endConnect = "end";
                     SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
@@ -549,7 +525,7 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 ex.printStackTrace();
             }
 
-            BufferedReader readfile = null;
+            BufferedReader readfile;
             if (fileNeedCreate == null && filename == null) {
                 JOptionPane.showMessageDialog(_panel_gantt, "Hãy chọn file cần thực hiện lập lịch CPU", "Thông báo",
                         JOptionPane.WARNING_MESSAGE);
@@ -714,27 +690,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
             }
         }
         msg_text.setText("");
-        if (e.getSource() == _btn_exit) {
-            try {
-                String EXIT = "EXIT";
-
-                //Encrypt first time by secretKey AES
-                SecretKeySpec skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
-                encryptedMessage = Encryption.encryptDataByAES(EXIT, skeySpec);
-
-                //Encrypt second time by publicKey RSA
-                PublicKey pubKey = publicKey(PUBLIC_KEY);
-                encryptedMessage = Encryption.encryptDataByRSA(encryptedMessage, pubKey);
-
-                out.write(encryptedMessage);
-                out.newLine();
-                out.flush();
-            }
-            catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-
     }
 
     @Override

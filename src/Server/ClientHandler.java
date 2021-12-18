@@ -168,13 +168,16 @@ public class ClientHandler extends Thread {
                                     tmp += shortestPath.get(i).toString() + " ";
                                 }
                                 System.out.println("Gửi đường đi ngắn nhất đến client: " + tmp);
-                                System.out.println(Thread.currentThread());
-                                out.write(tmp.toString());
+                                //Encrypt data by AES
+                                tmp = Encryption.encryptDataByAES(tmp, skeySpec);
+                                out.write(tmp);
                                 out.newLine();
                                 out.flush();
 
                                 System.out.println("Gửi chi phí tối ưu đến client:" + cost);
-                                out.write(String.valueOf(cost));
+                                //Encrypt data by AES
+                                String result = Encryption.encryptDataByAES(String.valueOf(cost), skeySpec);
+                                out.write(String.valueOf(result));
                                 out.newLine();
                                 out.flush();
                             } else {
@@ -197,7 +200,6 @@ public class ClientHandler extends Thread {
                                 decryptData = Decryption.decryptDataByAES(decryptData, skeySpec);
                                 line = decryptData;
                                 System.out.println(line);
-                                if (line.equals("EXIT")) return;
                                 if (line.matches(check_txt)) {
                                     System.out.println(line);
                                     File file = new File("./src/dataServer/S_" + line);
