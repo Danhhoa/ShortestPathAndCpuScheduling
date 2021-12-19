@@ -102,13 +102,13 @@ public class CPU_Scheduling {
 		double time = 0.0;
 		double idle = 0.0;
 		double temp = 0.0;
-		while( _joblist.isEmpty() != true )	{
+		while(!_joblist.isEmpty())	{
 			for(int i = 0; i < _joblist.size(); i++)	{
 				if( _joblist.get(i).getArrivalTime() <= time )
 					_queue.enqueue(_joblist.get(i));
 				else	break;
 			}
-			if( _queue.isEmpty() != true )	{
+			if(!_queue.isEmpty())	{
 				tempJob = _queue.dequeue();
 				for(int i = 0; i < _joblist.size(); i++)	{
 					if( _joblist.get(i).getArrivalTime() > time)	{
@@ -147,7 +147,7 @@ public class CPU_Scheduling {
 		Job tempJob = new Job();
 		double time = 0.0;
 		double idle = 0.0;
-		while( _joblist.isEmpty() != true )	{
+		while(!_joblist.isEmpty())	{
 			if( _joblist.get(0).getArrivalTime() <= time )	{
 				tempJob = dequeue();
 				if(tempJob.getBurstTime() != 0)	{

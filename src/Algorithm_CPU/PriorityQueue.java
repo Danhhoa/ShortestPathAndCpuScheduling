@@ -19,7 +19,7 @@ public class PriorityQueue	{
 			if( job == _queue.get(i) )
 				done = true;
 		}
-		if(done==false)	{
+		if(!done)	{
 			_queue.add(job);
 			sort();
 		}

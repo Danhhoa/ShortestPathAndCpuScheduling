@@ -34,12 +34,9 @@ public class Client extends JFrame implements ActionListener, ItemListener {
     private JFileChooser openFileChooser;
     public String filename;
     public String fileNeedCreate;
-    private JButton btnSelectFindPath;
-    private JButton btnScheduleCPU;
     private JButton btnOpenFile;
     private JButton btnStartFindPath;
     private JLabel messageLabel;
-    private JPanel panel;
 
     JPanel _panel_gantt;
     JScrollPane _scrollpane;
@@ -283,7 +280,6 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 shortestPath = data.split(" ");
             }
             if (!data.matches(regex) && !data.matches(checkPath)){
-                String result = "";
                 String tmpResult = "";
                 JTextArea gantt = new JTextArea(5, 20);
                 _scrollpane = new JScrollPane(gantt);
@@ -292,22 +288,10 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 gantt.setBackground(getBackground());
                 tmpResult = data;
                 tmpResult = tmpResult.replace(" <-- ", " --> ");
-                if (!result.equals("RR")) {
-                    gantt.setText(data);
-                    _panel_gantt.add(gantt);
-                    _panel_gantt.validate();
 
-                    String[] ganttChart = result.split(";");
-                    for (String a : ganttChart) {
-                        System.out.println(a);
-                    }
-                }
-                if (result.equals("RR")) {
-//                    result = in.readLine();
                     gantt.setText(data);
                     _panel_gantt.add(gantt);
                     _panel_gantt.validate();
-                }
                 System.out.println("gantt:" +tmpResult);
             }
             if (filename != null && shortestPath != null && cost != null) {
@@ -350,6 +334,7 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                     out.newLine();
                     out.flush();
 
+                    System.out.println("client close");
                     stopConnect();
                 } catch (IOException ex) {
 
@@ -418,47 +403,40 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                     HashMap<String,String> arrNode = new HashMap<>();
                     String[] tmpArr;
                     boolean flag = true;
-                    try {
-                        while ((line = readfile.readLine()) != null) {
-                            System.out.println(line);
-                            tmpArr = line.split(" ");
-                            if (line.matches(checkMap)) {
-                                tmp = tmp + line + ";";
-                                arrNode.put(tmpArr[0], tmpArr[1]);
-                            }
-                            else if(line.equals("-1") || (line.matches(checkSrcDes) && (arrNode.containsKey(tmpArr[1]) || arrNode.containsValue(tmpArr[1])))) {
-                                tmp += line +";";
-                            } else {
-                                JOptionPane.showMessageDialog(frame, "Dữ liệu trong " +fileNeedCreate+ " sai yêu cầu \n"
-                                                + "hãy kiểm tra tại dòng (" + line + ") và sửa theo đúng format \n"
-                                                + "Tên đỉnh không dùng kí tự đặt biệt, trọng số phải > 0\n"
-                                                + "Phải có flag -1 để phân tách dữ liệu các đỉnh và đỉnh nguồn đích cần tìm\n"
-                                                + "đỉnh nguồn và đích cần tìm phải tồn tại trong đồ thị\n"
-                                                +"Ví dụ: \n" + "A B 10\n" +"A C 1\n"+"...\n" + "-1\n" + "from A\n" + "to B\n", "Thông báo",
-                                        JOptionPane.WARNING_MESSAGE);
-                                messageLabel.setText("Hãy nhập dữ liệu đúng");
-                                flag = false;
-                                break;
-                            }
+                    while ((line = readfile.readLine()) != null) {
+                        System.out.println(line);
+                        tmpArr = line.split(" ");
+                        if (line.matches(checkMap)) {
+                            tmp = tmp + line + ";";
+                            arrNode.put(tmpArr[0], tmpArr[1]);
                         }
-                        if (flag) {
-                            System.out.println("gửi: " + tmp);
-                            skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
-                            encryptedMessage = Encryption.encryptDataByAES(tmp, skeySpec);
-
-                            //Encrypt second time by publicKey RSA
-                            pubKey = publicKey(PUBLIC_KEY);
-                            encryptedMessage = Encryption.encryptDataByRSA(encryptedMessage, pubKey);
-                            out.write(encryptedMessage);
-                            out.newLine();
-                            out.flush();
+                        else if(line.equals("-1") || (line.matches(checkSrcDes) && (arrNode.containsKey(tmpArr[1]) || arrNode.containsValue(tmpArr[1])))) {
+                            tmp += line +";";
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Dữ liệu trong " +fileNeedCreate+ " sai yêu cầu \n"
+                                            + "hãy kiểm tra tại dòng (" + line + ") và sửa theo đúng format \n"
+                                            + "Tên đỉnh không dùng kí tự đặt biệt, trọng số phải > 0\n"
+                                            + "Phải có flag -1 để phân tách dữ liệu các đỉnh và đỉnh nguồn đích cần tìm\n"
+                                            + "đỉnh nguồn và đích cần tìm phải tồn tại trong đồ thị\n"
+                                            +"Ví dụ: \n" + "A B 10\n" +"A C 1\n"+"...\n" + "-1\n" + "from A\n" + "to B\n", "Thông báo",
+                                    JOptionPane.WARNING_MESSAGE);
+                            messageLabel.setText("Hãy nhập dữ liệu đúng");
+                            flag = false;
+                            break;
                         }
-                    } finally {
-                        // TODO: handle finally clause
-//						readfile.close();
                     }
-                } catch (FileNotFoundException e1) {
-                    e1.printStackTrace();
+                    if (flag) {
+                        System.out.println("gửi: " + tmp);
+                        skeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+                        encryptedMessage = Encryption.encryptDataByAES(tmp, skeySpec);
+
+                        //Encrypt second time by publicKey RSA
+                        pubKey = publicKey(PUBLIC_KEY);
+                        encryptedMessage = Encryption.encryptDataByRSA(encryptedMessage, pubKey);
+                        out.write(encryptedMessage);
+                        out.newLine();
+                        out.flush();
+                    }
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -541,7 +519,7 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 try {
                     boolean flag = true;
                     readfile = new BufferedReader(new FileReader(filename));
-                    String line = "";
+                    String line;
                     String tmp = "";
 
                     System.out.println("name: " + fileNeedCreate);
@@ -594,10 +572,8 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                         out.newLine();
                         out.flush();
                     }
-                } catch (FileNotFoundException fileNotFoundException) {
+                } catch (IOException fileNotFoundException) {
                     fileNotFoundException.printStackTrace();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
                 }
             }
         }
@@ -622,7 +598,7 @@ public class Client extends JFrame implements ActionListener, ItemListener {
                 _panel_gantt.repaint();
                 _panel_gantt.validate();
                 _scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-                String algorithm = "";
+                String algorithm;
                 if (fileNeedCreate == null && filename == null) {
                     JOptionPane.showMessageDialog(_panel_gantt, "Hãy chọn file cần thực hiện dể giải bài toán lập lịch CPU", "Thông báo",
                             JOptionPane.WARNING_MESSAGE);

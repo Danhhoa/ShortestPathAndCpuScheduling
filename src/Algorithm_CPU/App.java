@@ -25,10 +25,7 @@ public class App {
             Scanner sc = new Scanner(file);
 
             while (sc.hasNextLine()) {
-                _jobs.add(
-                        new Job(_jobs.size() + 1, 0, 0,
-                                0, Double.POSITIVE_INFINITY)
-                );
+                _jobs.add(new Job(_jobs.size() + 1, 0, 0, 0, Double.POSITIVE_INFINITY));
                 String input = sc.nextLine();
                 StringTokenizer st = new StringTokenizer(input, ";");
                 String arrival = st.nextToken();
@@ -67,11 +64,9 @@ public class App {
         String tempGantt = "";
         System.out.print("0.0");
         String result = "0.0 ";
-        String tmpGantt = "";
         for(int i = 0; i < _gantt_chart.getJobList().size(); i++) {
             System.out.print(" -----> " + _gantt_chart.getJobList().get(i) + " <----- " + _gantt_chart.getTimeList().get(i));
             tempGantt = " -----> " + _gantt_chart.getJobList().get(i) + " <----- " + _gantt_chart.getTimeList().get(i);
-            tmpGantt = _gantt_chart.getJobList().get(i) + " <-- " + _gantt_chart.getTimeList().get(i) + _gantt_chart.getTimeList().get(i) + " --> ";
             result += tempGantt;
         }
         System.out.println("\n\n");
